@@ -27,7 +27,7 @@ public class LoginController {
     
     @PostMapping("/login")
     public ModelAndView doLogin(@RequestParam(value = "id") String id,
-                                @RequestParam(value = "passowrd")String password,
+                                @RequestParam(value = "password")String password,
                                 HttpServletResponse response,
                                 ModelAndView modelAndView) throws LoginFailedException {
 
