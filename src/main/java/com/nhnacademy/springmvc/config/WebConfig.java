@@ -5,14 +5,19 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ApplicationContextEvent;
+import org.springframework.http.MediaType;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
@@ -20,7 +25,7 @@ import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 @EnableWebMvc
 @Configuration
 @ComponentScan(basePackageClasses = ControllerBase.class)
-public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
+public class WebConfig implements WebMvcConfigurer, ApplicationContextAware, MessageSourceAware {
     private ApplicationContext applicationContext;
     private MessageSource messageSource;
 
@@ -30,8 +35,21 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
     }
 
     @Override
-    public void configureViewResolvers(ViewResolverRegistry registry){
-        registry.viewResolver(thymeleafViewResolver());
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+
+//    @Override
+//    public void configureViewResolvers(ViewResolverRegistry registry) {
+//        registry.jsp("/WEB-INF/view/", ".jsp");
+//        registry.viewResolver(thymeleafViewResolver());
+//
+//    }
+
+    @Bean
+    public LocaleResolver localeResolver() {
+        return new SessionLocaleResolver();
     }
 
     @Bean
@@ -43,6 +61,11 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
         viewResolver.setViewNames(new String[] { "view/*" });
 
         return viewResolver;
+    }
+
+    @Override
+    public void configureViewResolvers(ViewResolverRegistry registry) {
+        registry.viewResolver(thymeleafViewResolver());
     }
 
     public SpringTemplateEngine templateEngine() {
@@ -62,6 +85,16 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware {
         templateResolver.setTemplateMode("HTML5");
 
         return templateResolver;
+    }
+
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+        configurer.favorParameter(true)
+                .parameterName("format")
+                .ignoreAcceptHeader(true)
+                .defaultContentType(MediaType.APPLICATION_JSON)
+                .mediaType("json", MediaType.APPLICATION_JSON)
+                .mediaType("xml", MediaType.APPLICATION_XML);
     }
 
 
