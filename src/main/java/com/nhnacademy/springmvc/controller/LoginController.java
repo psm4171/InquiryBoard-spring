@@ -1,47 +1,51 @@
 package com.nhnacademy.springmvc.controller;
 
-import com.nhnacademy.springmvc.exception.LoginFailedException;
-import com.nhnacademy.springmvc.repository.UserRepository;
+import com.nhnacademy.springmvc.domain.Account;
+import com.nhnacademy.springmvc.domain.Role;
+import com.nhnacademy.springmvc.repository.AccountRepository;
+import javax.security.auth.login.AccountNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.*;
-import org.springframework.web.servlet.ModelAndView;
 
 @Slf4j
 @Controller
 public class LoginController {
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
 
-    public LoginController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public LoginController(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
 
-    
-    @GetMapping("/login")
-    public String login(){
-     return "view/login";
-    }
-    
     @PostMapping("/login")
-    public ModelAndView doLogin(@RequestParam(value = "id") String id,
-                                @RequestParam(value = "password")String password,
-                                HttpServletResponse response,
-                                ModelAndView modelAndView) throws LoginFailedException {
+    public String doLogin(@RequestParam(value="id") String id,
+                          @RequestParam(value="password") String password,
+                          HttpServletRequest request) throws AccountNotFoundException {
 
-        log.info("doLogin request");
+        log.info("LoginController - doLogin");
 
-        if(userRepository.matches(id, password)) {
-            Cookie cookie = new Cookie("LoginSession", id);
-            response.addCookie(cookie);
-
-            modelAndView.setViewName("view/login");
-        }else {
-            throw new LoginFailedException();
+        if(!accountRepository.matches(id, password)){
+            throw new AccountNotFoundException();
         }
 
-        return modelAndView;
+        Account account = accountRepository.getAccount(id);
+
+        HttpSession session = request.getSession();
+
+        if(checkAdmin(account)){
+            session.setAttribute("admin", account.getId());
+            return "redirect:/admin";
+        }
+
+        session.setAttribute("user", account.getId());
+        return "redirect:/user";
     }
+
+    private static boolean checkAdmin(Account account){
+        return account.getRole().equals(Role.Admin);
+    }
+
 }
