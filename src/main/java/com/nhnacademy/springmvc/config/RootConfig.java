@@ -17,8 +17,7 @@ public class RootConfig {
     @Bean
     public UserRepository userRepository() {
         UserRepository userRepository = new UserRepositoryImpl();
-        userRepository.register("custom1", "1211", "박고객", "park@customer.com", false);
-        userRepository.register("custom2", "1222", "김고객", "kim@customer.com", false);
+      userRepository.register("user", "1111", "김고객", "kim@customer.com", false);
         userRepository.register("admin", "1234", "한담당", "han@customer.com", true);
 
         return userRepository;
