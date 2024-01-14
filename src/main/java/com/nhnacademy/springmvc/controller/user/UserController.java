@@ -1,13 +1,15 @@
 package com.nhnacademy.springmvc.controller.user;
 
+import com.nhnacademy.springmvc.domain.Post;
+import com.nhnacademy.springmvc.exception.PostNotFoundException;
 import com.nhnacademy.springmvc.repository.PostRepository;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
@@ -29,5 +31,18 @@ public class UserController {
         }
 
         return "view/user/index";
+    }
+
+    @GetMapping("/detail/{postId}")
+    public String postDetail(@PathVariable(value = "postId") long postId, Model model){
+
+        if(!postRepository.exists(postId)){
+            throw new PostNotFoundException();
+        }
+
+        Post post = postRepository.getPost(postId);
+        model.addAttribute("post", post);
+
+        return "view/user/detail";
     }
 }
