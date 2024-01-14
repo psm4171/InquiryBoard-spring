@@ -20,17 +20,38 @@
 
 <h1>나의 문의 글 목록</h1>
 <div style="width: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column">
-        <table>
+        <table border="1" style="width: 1000px; text-align: center; border-collapse: collapse">
             <thead>
             <tr>
-                <td width="80px">번호</td>
-                <td width="200px">작성자</td>
+                <td width="100px">번호</td>
+                <td width="250px">작성자</td>
                 <td>제목</td>
-                <td width="120px">분류</td>
+                <td width="180px">분류</td>
                 <td width="200px">등록일</td>
-                <td width="100px">답변 여부</td>
+                <td width="200px">답변 여부</td>
             </tr>
             </thead>
+
+            <tbody>
+                <th:block th:each="post : ${posts}">
+                    <tr>
+                        <td th:text="${post.postId}"></td>
+                        <td th:text="${post.accountId}"></td>
+                        <td>
+                            <a th:text="${post.title}" th:href="'/user/detail' + ${post.postId}"></a>
+                        </td>
+                        <td th:text="${post.category.value}"></td>
+                        <td th:text="${post.registerDate}"></td>
+
+                        <th:block th:if="${post.answerStatus}">
+                            <td class="answerStatus_isTrue">답변 완료</td>
+                        </th:block>
+                        <th:block th:unless="${post.answerStatus}">
+                            <td class="answerStatus_isFalse">답변 대기중</td>
+                        </th:block>
+                    </tr>
+                </th:block>
+            </tbody>
         </table>
     </div>
 </body>
