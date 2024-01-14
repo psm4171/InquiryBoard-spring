@@ -1,4 +1,6 @@
 package com.nhnacademy.springmvc.exception;
 
-public class LoginFailedException extends Throwable {
+import javax.security.auth.login.LoginException;
+
+public class LoginFailedException extends LoginException {
 }
