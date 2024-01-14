@@ -67,10 +67,10 @@ public class PostRegisterController {
 
     }
 
-    private boolean fileEmptyCheck(MultipartFile[] multipartFiles) {
+    private boolean fileEmptyCheck(MultipartFile[] uploadFiles) {
         boolean isEmpty = false;
 
-        for (MultipartFile file : multipartFiles) {
+        for (MultipartFile file : uploadFiles) {
             if (file.isEmpty()) {
                 isEmpty = true;
             }
@@ -78,18 +78,18 @@ public class PostRegisterController {
         return isEmpty;
     }
 
-    private void fileUpload(MultipartFile[] multipartFiles, List<String> fileList) throws IOException {
-        fileTypeCheck(multipartFiles);
+    private void fileUpload(MultipartFile[] uploadFiles, List<String> fileList) throws IOException {
+        fileTypeCheck(uploadFiles);
 
-        for(MultipartFile file : multipartFiles){
+        for(MultipartFile file : uploadFiles){
             String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
             fileList.add(fileName);
             file.transferTo(Paths.get(UPLOAD_PATH + fileName));
         }
     }
 
-    private void fileTypeCheck(MultipartFile[] multipartFiles) {
-        for (MultipartFile file : multipartFiles) {
+    private void fileTypeCheck(MultipartFile[] uploadFiles) {
+        for (MultipartFile file : uploadFiles) {
             if (!acceptableFileType.contains(file.getContentType())) {
                 throw new NotAcceptableFileTypeException();
             }
