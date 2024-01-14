@@ -20,6 +20,8 @@ public class Post {
     private String content;
     private LocalDateTime registerDate;
 
+    private List<String> fileList;
+
     private boolean answerStatus;
 
     public Post(String accountId, String title, Category category, String content) {
@@ -31,6 +33,10 @@ public class Post {
 
     public static Post create(String accountId, String title, Category category, String content){
         return new Post(accountId, title, category, content);
+    }
+
+    public boolean isAnswerStatus(){
+        return this.answerStatus;
     }
 
 
